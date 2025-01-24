@@ -4,87 +4,87 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 6f;
-    [SerializeField] private float rotationSpeed = 15f;
-    [SerializeField] private float jumpForce = 50f;
+    [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private float jumpHeight = 2f;
     [SerializeField] private float gravity = -9.81f;
 
-    [Header("Ground Check")]
-    [SerializeField] private float groundCheckDistance = 0.4f;
-    [SerializeField] private LayerMask groundMask;
+    [Header("Ground Detection")]
+    [SerializeField] private Transform groundCheck; // Empty GameObject as ground check point
+    [SerializeField] private LayerMask groundLayer;
 
     private CharacterController controller;
-    private Vector3 velocity;
-    private bool isGrounded;
     private Transform mainCamera;
+    private Vector3 velocity;
     private float turnSmoothVelocity;
+    private bool isGrounded;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        // Get camera reference safely
+
+        // Get the main camera reference safely
         mainCamera = Camera.main?.transform;
         if (mainCamera == null)
         {
-            Debug.LogWarning("Main camera not found! Creating a reference to current camera.");
-            mainCamera = Object.FindAnyObjectByType<Camera>().transform;
+            Debug.LogWarning("Main camera not found! Finding any available camera.");
+            mainCamera = FindObjectOfType<Camera>().transform;
         }
     }
 
     void Update()
     {
-        GroundCheck();
         HandleMovement();
-
-        // Only jump with spacebar
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            HandleJump();
-        }
-
+        HandleJumping();
         ApplyGravity();
     }
 
     void HandleMovement()
     {
-        // Get input
-        float horizontal = Input.GetAxis("Horizontal"); // Changed from GetAxisRaw for smoother movement
+        float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        // Create movement vector
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
         if (direction.magnitude >= 0.1f && mainCamera != null)
         {
-            // Calculate movement angle based on camera
+            // Calculate movement direction relative to the camera
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + mainCamera.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 1f / rotationSpeed);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+            float smoothedAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0.1f);
+            transform.rotation = Quaternion.Euler(0f, smoothedAngle, 0f);
 
-            // Move in the correct direction
+            // Move in the desired direction
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            Vector3 movement = moveDir * moveSpeed * Time.deltaTime;
-            controller.Move(movement);
+            controller.Move(moveDir * moveSpeed * Time.deltaTime);
         }
     }
 
-    void HandleJump()
+    void HandleJumping()
     {
-        velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); // Apply jump force
+        }
     }
 
     void ApplyGravity()
     {
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
-
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
 
-    void GroundCheck()
+    void OnTriggerEnter(Collider other)
     {
-        isGrounded = Physics.CheckSphere(transform.position, groundCheckDistance, groundMask);
+        if (other.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Ground"))
+        {
+            isGrounded = false;
+        }
     }
 }
