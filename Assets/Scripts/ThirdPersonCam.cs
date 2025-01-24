@@ -1,83 +1,77 @@
 using UnityEngine;
 
-public class ThirdPersonCam : MonoBehaviour
+public class ThirdPersonCamera : MonoBehaviour
 {
     [Header("References")]
-    public Transform orientation;
-    public Transform player;
-    public Transform playerObj;
-    public Rigidbody rb;
+    [SerializeField] private Transform target;
 
     [Header("Camera Settings")]
-    public float rotationSpeed = 5f;
-    public float smoothTime = 0.1f; // Added smoothing time
-    private Vector3 currentRotationVelocity; // Added for smooth rotation
+    [SerializeField] private float distance = 5f;
+    [SerializeField] private float minDistance = 1f;
+    [SerializeField] private float maxDistance = 8f;
+    [SerializeField] private float height = 2f;
+    [SerializeField] private float rotationSpeed = 5f;
+    [SerializeField] private float minVerticalAngle = -30f;
+    [SerializeField] private float maxVerticalAngle = 60f;
 
-    public Transform combatLookAt;
+    [Header("Collision")]
+    [SerializeField] private float collisionRadius = 0.2f;
+    [SerializeField] private LayerMask collisionMask;
 
-    public GameObject thirdPersonCam;
-    public GameObject combatCam;
-    public GameObject topDownCam;
+    private float currentRotationX;
+    private float currentRotationY;
+    private float currentDistance;
 
-    public CameraStyle currentStyle;
-    public enum CameraStyle
+    void Start()
     {
-        Basic,
-        Combat,
-        Topdown
-    }
+        if (target == null)
+            target = GameObject.FindGameObjectWithTag("Player").transform;
 
-    private void Start()
-    {
+        currentDistance = distance;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
-    private void Update()
+    void LateUpdate()
     {
-        // switch styles
-        if (Input.GetKeyDown(KeyCode.Alpha1)) SwitchCameraStyle(CameraStyle.Basic);
-        if (Input.GetKeyDown(KeyCode.Alpha2)) SwitchCameraStyle(CameraStyle.Combat);
-        if (Input.GetKeyDown(KeyCode.Alpha3)) SwitchCameraStyle(CameraStyle.Topdown);
+        if (!target) return;
 
-        // rotate orientation with smoothing
-        Vector3 viewDir = player.position - new Vector3(transform.position.x, player.position.y, transform.position.z);
-        Vector3 smoothedDirection = Vector3.SmoothDamp(orientation.forward, viewDir.normalized, ref currentRotationVelocity, smoothTime);
-        orientation.forward = smoothedDirection;
-
-        // rotate player object
-        if (currentStyle == CameraStyle.Basic || currentStyle == CameraStyle.Topdown)
-        {
-            float horizontalInput = Input.GetAxis("Horizontal");
-            float verticalInput = Input.GetAxis("Vertical");
-            Vector3 inputDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
-
-            if (inputDir != Vector3.zero)
-            {
-                Vector3 targetDirection = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotationSpeed);
-                playerObj.forward = Vector3.SmoothDamp(playerObj.forward, targetDirection, ref currentRotationVelocity, smoothTime);
-            }
-        }
-        else if (currentStyle == CameraStyle.Combat)
-        {
-            Vector3 dirToCombatLookAt = combatLookAt.position - new Vector3(transform.position.x, combatLookAt.position.y, transform.position.z);
-            Vector3 smoothedCombatDir = Vector3.SmoothDamp(orientation.forward, dirToCombatLookAt.normalized, ref currentRotationVelocity, smoothTime);
-
-            orientation.forward = smoothedCombatDir;
-            playerObj.forward = smoothedCombatDir;
-        }
+        HandleRotation();
+        HandleZoom();
+        UpdateCameraPosition();
     }
 
-    private void SwitchCameraStyle(CameraStyle newStyle)
+    void HandleRotation()
     {
-        combatCam.SetActive(false);
-        thirdPersonCam.SetActive(false);
-        topDownCam.SetActive(false);
+        float mouseX = Input.GetAxis("Mouse X") * rotationSpeed;
+        float mouseY = Input.GetAxis("Mouse Y") * rotationSpeed;
 
-        if (newStyle == CameraStyle.Basic) thirdPersonCam.SetActive(true);
-        if (newStyle == CameraStyle.Combat) combatCam.SetActive(true);
-        if (newStyle == CameraStyle.Topdown) topDownCam.SetActive(true);
+        currentRotationY += mouseX;
+        currentRotationX -= mouseY;
+        currentRotationX = Mathf.Clamp(currentRotationX, minVerticalAngle, maxVerticalAngle);
+    }
 
-        currentStyle = newStyle;
+    void HandleZoom()
+    {
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        currentDistance = Mathf.Clamp(currentDistance - scroll * 5f, minDistance, maxDistance);
+    }
+
+    void UpdateCameraPosition()
+    {
+        Vector3 direction = new Vector3(0, 0, -currentDistance);
+        Quaternion rotation = Quaternion.Euler(currentRotationX, currentRotationY, 0);
+        Vector3 targetPosition = target.position + Vector3.up * height;
+
+        Vector3 desiredPosition = targetPosition + rotation * direction;
+
+        if (Physics.SphereCast(targetPosition, collisionRadius, desiredPosition - targetPosition,
+            out RaycastHit hit, currentDistance, collisionMask))
+        {
+            desiredPosition = targetPosition + (desiredPosition - targetPosition).normalized * (hit.distance - 0.1f);
+        }
+
+        transform.position = desiredPosition;
+        transform.LookAt(targetPosition);
     }
 }
