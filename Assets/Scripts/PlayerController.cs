@@ -4,6 +4,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 6f;
+    [SerializeField] private float sprintMultiplier = 2f;
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private float jumpHeight = 2f;
     [SerializeField] private float gravity = -9.81f;
@@ -22,12 +23,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        mainCamera = Camera.main?.transform;
-        if (mainCamera == null)
-        {
-            Debug.LogWarning("Main camera not found! Finding any available camera.");
-            mainCamera = FindObjectOfType<Camera>().transform;
-        }
+        mainCamera = Camera.main?.transform ?? FindFirstObjectByType<Camera>().transform;
     }
 
     void Update()
@@ -60,7 +56,8 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, smoothedAngle, 0f);
 
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            controller.Move(moveDir * moveSpeed * Time.deltaTime);
+            float currentSpeed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? sprintMultiplier : 1f);
+            controller.Move(moveDir * currentSpeed * Time.deltaTime);
         }
     }
 
