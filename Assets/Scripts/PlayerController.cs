@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
         if (mainCamera == null)
         {
             Debug.LogWarning("Main camera not found! Creating a reference to current camera.");
-            mainCamera = FindObjectOfType<Camera>().transform;
+            mainCamera = Object.FindAnyObjectByType<Camera>().transform;
         }
     }
 

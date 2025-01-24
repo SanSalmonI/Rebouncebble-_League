@@ -11,14 +11,12 @@ public class BubbleMovement : MonoBehaviour
 
     void Start()
     {
-<<<<<<< HEAD
-        // test
-=======
+
         rb = GetComponent<Rigidbody>();
         rb.useGravity = true;
         rb.linearDamping = 2f;
         startPosition = transform.position;
->>>>>>> Lukas,test,cameramovement
+
     }
 
     void FixedUpdate()
