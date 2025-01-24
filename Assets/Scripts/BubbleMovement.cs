@@ -3,16 +3,17 @@ using UnityEngine;
 public class BubbleMovement : MonoBehaviour
 {
     [Header("Bubble Physics")]
-    [SerializeField] private float floatForce = 5f;
-    [SerializeField] private float swayAmount = 0.5f;
-    [SerializeField] private float swaySpeed = 2f;
-    [SerializeField] private float bounciness = 0.8f;
-    [SerializeField] private float maxBounceForce = 20f;
+    [SerializeField] private float floatForce = 2f;
+    [SerializeField] private float descentSpeed = 1f;
+    [SerializeField] private float playerBounceForce = 10f;
+    [SerializeField] private float playerJumpBounceMultiplier = 2.5f;
+    [SerializeField] private float maxBounceVelocity = 15f;
+    [SerializeField] private float airResistance = 0.98f;
     [SerializeField] private float minBounceForce = 5f;
-    [SerializeField] private float maxHeight = 20f;
-    [SerializeField] private float randomMovementIntensity = 0.8f;
 
-    [Header("Visual Feedback")]
+    [Header("Visual Effects")]
+    [SerializeField] private float wobbleAmount = 0.3f;
+    [SerializeField] private float wobbleSpeed = 2f;
     [SerializeField] private float squishAmount = 0.3f;
     [SerializeField] private float squishRecoverySpeed = 5f;
 
@@ -20,6 +21,7 @@ public class BubbleMovement : MonoBehaviour
     private Vector3 startPosition;
     private Vector3 originalScale;
     private bool isSquished;
+    private bool gameOver = false;
 
     void Start()
     {
@@ -32,54 +34,40 @@ public class BubbleMovement : MonoBehaviour
     void SetupRigidbody()
     {
         rb.useGravity = true;
-        rb.linearDamping = 0.5f;
+        rb.linearDamping = 1f;
         rb.angularDamping = 0.5f;
-        rb.mass = 0.5f;
+        rb.mass = 0.1f;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
     }
 
     void FixedUpdate()
     {
-        ApplyFloatForce();
-        ApplySway();
-        AddRandomMovement();
-        ClampHeight();
-        RecoverFromSquish();
-    }
-
-    void ApplyFloatForce()
-    {
-        float heightFactor = 1f - (transform.position.y / maxHeight);
-        rb.AddForce(Vector3.up * floatForce * heightFactor);
-    }
-
-    void ApplySway()
-    {
-        float swayX = Mathf.Sin(Time.time * swaySpeed) * swayAmount;
-        float swayZ = Mathf.Cos(Time.time * swaySpeed) * swayAmount;
-        Vector3 sway = new Vector3(swayX, 0, swayZ);
-        rb.AddForce(sway, ForceMode.Force);
-    }
-
-    void AddRandomMovement()
-    {
-        if (Random.value < 0.1f)
+        if (!gameOver)
         {
-            Vector3 randomForce = Random.insideUnitSphere * randomMovementIntensity;
-            rb.AddForce(randomForce, ForceMode.Impulse);
+            ApplyFloatingEffect();
+            ApplyWobble();
+            ApplyAirResistance();
+            RecoverFromSquish();
         }
     }
 
-    void ClampHeight()
+    void ApplyFloatingEffect()
     {
-        if (transform.position.y > maxHeight)
-        {
-            Vector3 pos = transform.position;
-            pos.y = maxHeight;
-            transform.position = pos;
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, Mathf.Min(rb.linearVelocity.y, 0), rb.linearVelocity.z);
-        }
+        Vector3 descent = Vector3.down * descentSpeed;
+        rb.AddForce(descent + Vector3.up * floatForce);
+    }
+
+    void ApplyWobble()
+    {
+        float wobbleX = Mathf.Sin(Time.time * wobbleSpeed) * wobbleAmount;
+        float wobbleZ = Mathf.Cos(Time.time * wobbleSpeed) * wobbleAmount;
+        rb.AddForce(new Vector3(wobbleX, 0, wobbleZ), ForceMode.Force);
+    }
+
+    void ApplyAirResistance()
+    {
+        rb.linearVelocity *= airResistance;
     }
 
     void RecoverFromSquish()
@@ -97,23 +85,38 @@ public class BubbleMovement : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        HandleCollision(collision);
-        ApplySquishEffect(collision);
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            HandlePlayerCollision(collision);
+            ApplySquishEffect();
+        }
+        else if (collision.gameObject.CompareTag("Ground"))
+        {
+            GameOver();
+        }
     }
 
-    void HandleCollision(Collision collision)
+    void HandlePlayerCollision(Collision collision)
     {
         Vector3 hitDirection = (transform.position - collision.contacts[0].point).normalized;
-        float impactForce = collision.relativeVelocity.magnitude;
+        float impactSpeed = collision.relativeVelocity.magnitude;
 
-        Vector3 bounceDirection = Vector3.Reflect(collision.relativeVelocity.normalized, hitDirection);
-        float bounceForce = Mathf.Clamp(impactForce * bounciness, minBounceForce, maxBounceForce);
+        CharacterController playerController = collision.gameObject.GetComponent<CharacterController>();
+        float upwardVelocity = playerController ? playerController.velocity.y : 0;
+        float bounceForce = playerBounceForce;
 
-        rb.linearVelocity = bounceDirection * bounceForce;
-        rb.AddTorque(Random.insideUnitSphere * bounceForce, ForceMode.Impulse);
+        if (upwardVelocity > 0)
+        {
+            bounceForce *= playerJumpBounceMultiplier;
+            hitDirection = (hitDirection + Vector3.up).normalized;
+        }
+
+        bounceForce = Mathf.Max(bounceForce, minBounceForce);
+        Vector3 bounceVector = hitDirection * bounceForce * (1 + impactSpeed / 10);
+        rb.linearVelocity = Vector3.ClampMagnitude(bounceVector, maxBounceVelocity);
     }
 
-    void ApplySquishEffect(Collision collision)
+    void ApplySquishEffect()
     {
         Vector3 squishScale = originalScale;
         squishScale.y *= (1f - squishAmount);
@@ -121,5 +124,19 @@ public class BubbleMovement : MonoBehaviour
         squishScale.z *= (1f + squishAmount * 0.5f);
         transform.localScale = squishScale;
         isSquished = true;
+    }
+
+    void GameOver()
+    {
+        gameOver = true;
+        Debug.Log("Game Over - Bubble touched the ground!");
+        // Add your game over logic here
+    }
+
+    void OnDrawGizmos()
+    {
+        // Visual debug for bubble behavior
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, transform.localScale.x);
     }
 }
