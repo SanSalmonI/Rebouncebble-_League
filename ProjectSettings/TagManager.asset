@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - Bubble
+  - Player2
   layers:
   - Default
   - TransparentFX
