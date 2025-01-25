@@ -4,13 +4,15 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 6f;
-    [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private float sprintMultiplier = 2f;
+    
     [SerializeField] private float jumpHeight = 2f;
     [SerializeField] private float gravity = -9.81f;
 
     [Header("Ground Detection")]
-    [SerializeField] private Transform groundCheck; // Empty GameObject as ground check point
+    [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float groundCheckRadius = 0.2f;
 
     private CharacterController controller;
     private Transform mainCamera;
@@ -21,48 +23,49 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
-
-        // Get the main camera reference safely
-        mainCamera = Camera.main?.transform;
-        if (mainCamera == null)
-        {
-            Debug.LogWarning("Main camera not found! Finding any available camera.");
-            mainCamera = FindObjectOfType<Camera>().transform;
-        }
+        mainCamera = Camera.main?.transform ?? FindFirstObjectByType<Camera>().transform;
     }
 
     void Update()
     {
+        CheckGrounded();
         HandleMovement();
         HandleJumping();
         ApplyGravity();
+    }
+
+    void CheckGrounded()
+    {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
     }
 
     void HandleMovement()
     {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
-
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
         if (direction.magnitude >= 0.1f && mainCamera != null)
         {
-            // Calculate movement direction relative to the camera
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + mainCamera.eulerAngles.y;
             float smoothedAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0.1f);
             transform.rotation = Quaternion.Euler(0f, smoothedAngle, 0f);
 
-            // Move in the desired direction
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            controller.Move(moveDir * moveSpeed * Time.deltaTime);
+            float currentSpeed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? sprintMultiplier : 1f);
+            controller.Move(moveDir * currentSpeed * Time.deltaTime);
         }
     }
 
     void HandleJumping()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); // Apply jump force
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
 
@@ -72,19 +75,12 @@ public class PlayerController : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
     }
 
-    void OnTriggerEnter(Collider other)
+    void OnDrawGizmos()
     {
-        if (other.CompareTag("Ground"))
+        if (groundCheck != null)
         {
-            isGrounded = true;
-        }
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Ground"))
-        {
-            isGrounded = false;
+            Gizmos.color = isGrounded ? Color.green : Color.red;
+            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
         }
     }
 }

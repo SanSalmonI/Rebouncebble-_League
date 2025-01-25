@@ -5,7 +5,11 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
+<<<<<<< HEAD
   - Wall
+=======
+  - Bubble
+>>>>>>> ui-test
   layers:
   - Default
   - TransparentFX
