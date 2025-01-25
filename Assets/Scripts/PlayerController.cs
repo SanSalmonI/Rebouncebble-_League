@@ -3,49 +3,67 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 6f;
-    [SerializeField] private float sprintMultiplier = 2f;
-    [SerializeField] private float rotationSpeed = 180f;
-    [SerializeField] private float jumpHeight = 2f;
-    [SerializeField] private float gravity = -9.81f;
-    [SerializeField] private float acceleration = 10f;
-    [SerializeField] private float deceleration = 8f;
+    [SerializeField] protected float moveSpeed = 6f;
+    [SerializeField] protected float sprintMultiplier = 2f;
+    [SerializeField] protected float rotationSpeed = 10f;
+    [SerializeField] protected float jumpHeight = 2f;
+    [SerializeField] protected float gravity = -9.81f;
+    [SerializeField] protected float acceleration = 10f;
+    [SerializeField] protected float deceleration = 8f;
 
     [Header("Ground Detection")]
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float groundCheckRadius = 0.2f;
+    [SerializeField] protected Transform groundCheck;
+    [SerializeField] protected LayerMask groundLayer;
+    [SerializeField] protected float groundCheckRadius = 0.2f;
 
-    private CharacterController controller;
-    private Transform mainCamera;
-    private Vector3 velocity;
-    private Vector3 currentMoveVelocity;
-    private float currentSpeed;
-    private bool isGrounded;
+    protected CharacterController controller;
+    protected Transform mainCamera;
+    protected Vector3 velocity;
+    protected Vector3 currentMoveVelocity;
+    protected float currentSpeed;
+    protected bool isGrounded;
+    protected Vector3 inputDirection;
+    protected float rotationInput;
+    protected bool isJumping;
+    protected bool isSprinting;
 
-    void Start()
+    protected virtual void Start()
     {
         controller = GetComponent<CharacterController>();
         mainCamera = Camera.main?.transform ?? FindFirstObjectByType<Camera>().transform;
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
-    void Update()
+    protected virtual void Update()
     {
         CheckGrounded();
+        GetInput();
         HandleRotation();
         HandleMovement();
         HandleJumping();
         ApplyGravity();
     }
 
-    void HandleRotation()
+    protected virtual void GetInput()
     {
-        float rotationInput = Input.GetAxis("Horizontal") * rotationSpeed * Time.deltaTime;
-        transform.Rotate(Vector3.up * rotationInput);
+        float vertical = Input.GetAxis("Vertical");
+
+        // Specific key checks for Player 1 rotation
+        if (Input.GetKey(KeyCode.D)) rotationInput = 1;
+        if (Input.GetKey(KeyCode.A)) rotationInput = -1;
+        if (!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)) rotationInput = 0;
+
+        inputDirection = new Vector3(0f, 0f, vertical).normalized;
+        isJumping = Input.GetButtonDown("Jump");
+        isSprinting = Input.GetKey(KeyCode.LeftShift);
     }
 
-    void HandleMovement()
+    protected virtual void HandleRotation()
+    {
+        float rotation = rotationInput * rotationSpeed * Time.deltaTime;
+        transform.Rotate(Vector3.up * rotation);
+    }
+
+    protected virtual void HandleMovement()
     {
         float vertical = Input.GetAxis("Vertical");
         float targetSpeed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? sprintMultiplier : 1f);
@@ -67,7 +85,7 @@ public class PlayerController : MonoBehaviour
         controller.Move(currentMoveVelocity * Time.deltaTime);
     }
 
-    void HandleJumping()
+    protected virtual void HandleJumping()
     {
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
@@ -75,13 +93,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void ApplyGravity()
+    protected virtual void ApplyGravity()
     {
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
 
-    void CheckGrounded()
+    protected virtual void CheckGrounded()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
         if (isGrounded && velocity.y < 0)
@@ -90,7 +108,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OnDrawGizmos()
+    protected virtual void OnDrawGizmos()
     {
         if (groundCheck != null)
         {
