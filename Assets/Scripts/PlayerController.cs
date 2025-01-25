@@ -5,9 +5,11 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 6f;
     [SerializeField] private float sprintMultiplier = 2f;
-    [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private float rotationSpeed = 180f;
     [SerializeField] private float jumpHeight = 2f;
     [SerializeField] private float gravity = -9.81f;
+    [SerializeField] private float acceleration = 10f;
+    [SerializeField] private float deceleration = 8f;
 
     [Header("Ground Detection")]
     [SerializeField] private Transform groundCheck;
@@ -17,48 +19,52 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Transform mainCamera;
     private Vector3 velocity;
-    private float turnSmoothVelocity;
+    private Vector3 currentMoveVelocity;
+    private float currentSpeed;
     private bool isGrounded;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
         mainCamera = Camera.main?.transform ?? FindFirstObjectByType<Camera>().transform;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
     {
         CheckGrounded();
+        HandleRotation();
         HandleMovement();
         HandleJumping();
         ApplyGravity();
     }
 
-    void CheckGrounded()
+    void HandleRotation()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
+        float rotationInput = Input.GetAxis("Horizontal") * rotationSpeed * Time.deltaTime;
+        transform.Rotate(Vector3.up * rotationInput);
     }
 
     void HandleMovement()
     {
-        float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
-        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+        float targetSpeed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? sprintMultiplier : 1f);
 
-        if (direction.magnitude >= 0.1f && mainCamera != null)
+        Vector3 moveDirection = transform.forward * vertical;
+        moveDirection.Normalize();
+
+        if (moveDirection.magnitude > 0)
         {
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + mainCamera.eulerAngles.y;
-            float smoothedAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0.1f);
-            transform.rotation = Quaternion.Euler(0f, smoothedAngle, 0f);
-
-            Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            float currentSpeed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? sprintMultiplier : 1f);
-            controller.Move(moveDir * currentSpeed * Time.deltaTime);
+            currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, acceleration * Time.deltaTime);
         }
+        else
+        {
+            currentSpeed = Mathf.Lerp(currentSpeed, 0, deceleration * Time.deltaTime);
+        }
+
+        Vector3 targetVelocity = moveDirection * currentSpeed;
+        currentMoveVelocity = Vector3.Lerp(currentMoveVelocity, targetVelocity, acceleration * Time.deltaTime);
+        controller.Move(currentMoveVelocity * Time.deltaTime);
     }
 
     void HandleJumping()
@@ -73,6 +79,15 @@ public class PlayerController : MonoBehaviour
     {
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    void CheckGrounded()
+    {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
     }
 
     void OnDrawGizmos()
