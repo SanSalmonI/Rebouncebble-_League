@@ -128,7 +128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 20131545}
-  - component: {fileID: 20131544}
+  - component: {fileID: 20131546}
   m_Layer: 0
   m_Name: SplitScreenCamera
   m_TagString: Untagged
@@ -136,31 +136,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &20131544
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 20131543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dca2780a907d62e419886c76106534d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player1Target: {fileID: 1111184816}
-  player2Target: {fileID: 1130804867}
-  distance: 5
-  minDistance: 1
-  maxDistance: 8
-  height: 2
-  rotationSpeed: 5
-  minVerticalAngle: -30
-  maxVerticalAngle: 60
-  collisionRadius: 0.2
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!4 &20131545
 Transform:
   m_ObjectHideFlags: 0
@@ -176,6 +151,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &20131546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 20131543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de4efd4e8b4fe684c8e871c3484eb77a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player1: {fileID: 1111184816}
+  player2: {fileID: 1130804867}
+  cameraOffset: {x: 0, y: 5, z: -5}
+  smoothSpeed: 0.125
 --- !u!1 &151825693
 GameObject:
   m_ObjectHideFlags: 0
@@ -1001,7 +992,7 @@ GameObject:
   - component: {fileID: 1130804863}
   - component: {fileID: 1130804862}
   - component: {fileID: 1130804861}
-  - component: {fileID: 1130804860}
+  - component: {fileID: 1130804868}
   m_Layer: 6
   m_Name: PlayerObj (1)
   m_TagString: Player
@@ -1009,30 +1000,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1130804860
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1130804859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f97b4f235d0cb045a0934f9577358a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 6
-  sprintMultiplier: 2
-  rotationSpeed: 180
-  jumpHeight: 2
-  gravity: -9.81
-  acceleration: 10
-  deceleration: 8
-  groundCheck: {fileID: 2112532367}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  groundCheckRadius: 0.2
 --- !u!65 &1130804861
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1199,6 +1166,30 @@ Transform:
   - {fileID: 2112532367}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1130804868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1130804859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97fe3aa728baa5b4c98efcb28e7f3051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 6
+  sprintMultiplier: 2
+  rotationSpeed: 10
+  jumpHeight: 2
+  gravity: -9.81
+  acceleration: 10
+  deceleration: 8
+  groundCheck: {fileID: 2112532367}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  groundCheckRadius: 0.2
 --- !u!1 &1477736165
 GameObject:
   m_ObjectHideFlags: 0
@@ -1573,7 +1564,7 @@ GameObject:
   - component: {fileID: 1969228562}
   - component: {fileID: 1969228560}
   - component: {fileID: 1969228559}
-  - component: {fileID: 1969228558}
+  - component: {fileID: 1969228566}
   m_Layer: 0
   m_Name: Bubble
   m_TagString: Bubble
@@ -1581,30 +1572,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1969228558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1969228557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f924db96a499ab4384d334ce1390db4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  groundBounceForce: 50
-  playerImpactForce: 100
-  playerJumpMultiplier: 5
-  maxBounceVelocity: 15
-  horizontalBounceFactor: 2
-  bounceDamping: 3
-  upwardBias: 1.5
-  gravity: -9.81
-  airResistance: 0.99
-  floatTime: 0.5
-  squishAmount: 0.25
-  squishRecoverySpeed: 4
 --- !u!135 &1969228559
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1742,6 +1709,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1969228566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969228557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be9a850957d15614ea387429b0c274a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundBounceForce: 45
+  playerImpactForce: 25
+  playerJumpMultiplier: 4
+  maxBounceVelocity: 40
+  horizontalBounceFactor: 0.8
+  bounceDamping: 0.98
+  upwardBias: 1.5
+  gravity: -15
+  airResistance: 0.997
+  floatTime: 0.5
+  squishAmount: 0.3
+  squishRecoverySpeed: 8
 --- !u!1 &2038953112
 GameObject:
   m_ObjectHideFlags: 0

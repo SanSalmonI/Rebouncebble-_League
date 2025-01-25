@@ -30,7 +30,15 @@ public class PlayerController : MonoBehaviour
     protected virtual void Start()
     {
         controller = GetComponent<CharacterController>();
-        mainCamera = Camera.main?.transform ?? FindFirstObjectByType<Camera>().transform;
+        mainCamera = Camera.main?.transform;
+
+        if (groundCheck == null)
+        {
+            GameObject check = new GameObject("GroundCheck");
+            check.transform.parent = transform;
+            check.transform.localPosition = Vector3.down * 0.5f;
+            groundCheck = check.transform;
+        }
     }
 
     protected virtual void Update()
@@ -45,19 +53,16 @@ public class PlayerController : MonoBehaviour
 
     protected virtual void GetInput()
     {
-        // Player 1 specific movement with W and S
         if (Input.GetKey(KeyCode.W)) inputDirection.z = 1;
         else if (Input.GetKey(KeyCode.S)) inputDirection.z = -1;
         else inputDirection.z = 0;
 
-        // Rotation with A and D
         if (Input.GetKey(KeyCode.D)) rotationInput = 1;
         else if (Input.GetKey(KeyCode.A)) rotationInput = -1;
         else rotationInput = 0;
 
-        // Player 1 specific jump and sprint
         isJumping = Input.GetKey(KeyCode.Space);
-        isSprinting = Input.GetKey(KeyCode.RightShift);
+        isSprinting = Input.GetKey(KeyCode.LeftShift);
     }
 
     protected virtual void HandleRotation()
