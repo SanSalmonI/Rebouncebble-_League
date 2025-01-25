@@ -45,14 +45,16 @@ public class PlayerController : MonoBehaviour
 
     protected virtual void GetInput()
     {
-        float vertical = Input.GetAxis("Vertical");
+        // Player 1 specific movement with W and S
+        if (Input.GetKey(KeyCode.W)) inputDirection.z = 1;
+        else if (Input.GetKey(KeyCode.S)) inputDirection.z = -1;
+        else inputDirection.z = 0;
 
-        // Specific key checks for Player 1 rotation
+        // Rotation with A and D
         if (Input.GetKey(KeyCode.D)) rotationInput = 1;
-        if (Input.GetKey(KeyCode.A)) rotationInput = -1;
-        if (!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)) rotationInput = 0;
+        else if (Input.GetKey(KeyCode.A)) rotationInput = -1;
+        else rotationInput = 0;
 
-        inputDirection = new Vector3(0f, 0f, vertical).normalized;
         isJumping = Input.GetButtonDown("Jump");
         isSprinting = Input.GetKey(KeyCode.LeftShift);
     }
@@ -65,10 +67,8 @@ public class PlayerController : MonoBehaviour
 
     protected virtual void HandleMovement()
     {
-        float vertical = Input.GetAxis("Vertical");
-        float targetSpeed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? sprintMultiplier : 1f);
-
-        Vector3 moveDirection = transform.forward * vertical;
+        float targetSpeed = moveSpeed * (isSprinting ? sprintMultiplier : 1f);
+        Vector3 moveDirection = transform.forward * inputDirection.z;
         moveDirection.Normalize();
 
         if (moveDirection.magnitude > 0)
