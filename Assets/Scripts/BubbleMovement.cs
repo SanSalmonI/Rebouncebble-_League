@@ -98,21 +98,36 @@ public class BubbleMovement : MonoBehaviour
 
     void HandlePlayerCollision(Collision collision)
     {
+        CharacterController playerController = collision.gameObject.GetComponent<CharacterController>();
         Vector3 hitDirection = (transform.position - collision.contacts[0].point).normalized;
         float impactSpeed = collision.relativeVelocity.magnitude;
-
-        CharacterController playerController = collision.gameObject.GetComponent<CharacterController>();
         float upwardVelocity = playerController ? playerController.velocity.y : 0;
+
+        Vector3 bounceDirection;
         float bounceForce = playerBounceForce;
 
-        if (upwardVelocity > 0)
+        // Player hitting from below
+        if (hitDirection.y < -0.5f && upwardVelocity > 0)
         {
+            bounceDirection = Vector3.up;
             bounceForce *= playerJumpBounceMultiplier;
-            hitDirection = (hitDirection + Vector3.up).normalized;
+        }
+        // Player hitting from the sides
+        else if (Mathf.Abs(hitDirection.y) <= 0.5f && upwardVelocity > 0)
+        {
+            // Combine horizontal direction with upward movement
+            Vector3 horizontalDir = new Vector3(hitDirection.x, 0, hitDirection.z).normalized;
+            bounceDirection = (horizontalDir + Vector3.up).normalized;
+            bounceForce *= playerJumpBounceMultiplier;
+        }
+        // Default case (hitting from any other direction)
+        else
+        {
+            bounceDirection = hitDirection;
         }
 
         bounceForce = Mathf.Max(bounceForce, minBounceForce);
-        Vector3 bounceVector = hitDirection * bounceForce * (1 + impactSpeed / 10);
+        Vector3 bounceVector = bounceDirection * bounceForce * (1 + impactSpeed / 10);
         rb.linearVelocity = Vector3.ClampMagnitude(bounceVector, maxBounceVelocity);
     }
 
