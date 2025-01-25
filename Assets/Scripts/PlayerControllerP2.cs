@@ -1,3 +1,5 @@
+
+
 using UnityEngine;
 
 public class PlayerControllerP2 : PlayerController
@@ -15,7 +17,9 @@ public class PlayerControllerP2 : PlayerController
         else rotationInput = 0;
 
         // Player 2 specific jump and sprint
-        isJumping = Input.GetKey(KeyCode.LeftControl);
+        isJumping = Input.GetKey(KeyCode.RightControl);
         isSprinting = Input.GetKey(KeyCode.LeftShift);
     }
 }
+
+
