@@ -1074,7 +1074,6 @@ GameObject:
   - component: {fileID: 1002031850}
   - component: {fileID: 1002031849}
   - component: {fileID: 1002031856}
-  - component: {fileID: 1002031857}
   m_Layer: 0
   m_Name: Bubble
   m_TagString: Bubble
@@ -1225,7 +1224,7 @@ Transform:
   m_GameObject: {fileID: 1002031848}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.172062, y: 4.838002, z: -21.847668}
+  m_LocalPosition: {x: 5.3946276, y: 13.91, z: -32.327667}
   m_LocalScale: {x: 9.676004, y: 9.676004, z: 9.676004}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1240,32 +1239,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1002031848}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e700e7821ec126448ab0aa55db209c5, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f924db96a499ab4384d334ce1390db4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1002031857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1002031848}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8e9e42faed287c40aaf94922367cdd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  floatForce: 2
-  descentSpeed: 1
-  playerBounceForce: 10
-  playerJumpBounceMultiplier: 2.5
-  maxBounceVelocity: 15
-  airResistance: 0.98
-  minBounceForce: 5
-  wobbleAmount: 0.3
-  wobbleSpeed: 2
-  squishAmount: 0.3
-  squishRecoverySpeed: 5
+  groundBounceForce: 5
+  playerImpactForce: 8
+  playerJumpMultiplier: 2.5
+  maxBounceVelocity: 12
+  horizontalBounceFactor: 2
+  bounceDamping: 0.85
+  gravity: -9.81
+  airResistance: 0.99
+  squishAmount: 0.25
+  squishRecoverySpeed: 8
 --- !u!1 &1335490008
 GameObject:
   m_ObjectHideFlags: 0
@@ -1658,7 +1644,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 6
   sprintMultiplier: 2
-  rotationSpeed: 15
   jumpHeight: 2
   gravity: -9.81
   groundCheck: {fileID: 2123983115}
@@ -1778,7 +1763,7 @@ Transform:
   m_GameObject: {fileID: 1529995340}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.077435, y: 1.128, z: -32.395382}
+  m_LocalPosition: {x: 7.3, y: 1.128, z: -33.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
