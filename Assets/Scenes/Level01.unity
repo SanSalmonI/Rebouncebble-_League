@@ -1245,6 +1245,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 6
   sprintMultiplier: 2
+  rotationSpeed: 10
   jumpHeight: 2
   gravity: -9.81
   groundCheck: {fileID: 1477736166}
@@ -1799,16 +1800,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f924db96a499ab4384d334ce1390db4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundBounceForce: 5
+  groundBounceForce: 15
   playerImpactForce: 8
   playerJumpMultiplier: 2.5
-  maxBounceVelocity: 12
+  maxBounceVelocity: 15
   horizontalBounceFactor: 2
   bounceDamping: 0.85
   gravity: -9.81
   airResistance: 0.99
   squishAmount: 0.25
-  squishRecoverySpeed: 8
+  squishRecoverySpeed: 4
 --- !u!135 &1969228559
 SphereCollider:
   m_ObjectHideFlags: 0
