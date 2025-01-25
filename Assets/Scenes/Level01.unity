@@ -1779,7 +1779,6 @@ GameObject:
   - component: {fileID: 1969228564}
   - component: {fileID: 1969228563}
   - component: {fileID: 1969228562}
-  - component: {fileID: 1969228561}
   - component: {fileID: 1969228560}
   - component: {fileID: 1969228559}
   - component: {fileID: 1969228558}
@@ -1802,14 +1801,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f924db96a499ab4384d334ce1390db4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundBounceForce: 15
-  playerImpactForce: 8
-  playerJumpMultiplier: 2.5
+  groundBounceForce: 50
+  playerImpactForce: 100
+  playerJumpMultiplier: 5
   maxBounceVelocity: 15
   horizontalBounceFactor: 2
-  bounceDamping: 0.85
+  bounceDamping: 3
+  upwardBias: 1.5
   gravity: -9.81
   airResistance: 0.99
+  floatTime: 0.5
   squishAmount: 0.25
   squishRecoverySpeed: 4
 --- !u!135 &1969228559
@@ -1860,18 +1861,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1969228561
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1969228557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!135 &1969228562
 SphereCollider:
   m_ObjectHideFlags: 0
