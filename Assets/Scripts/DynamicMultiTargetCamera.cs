@@ -7,13 +7,12 @@ public class DynamicMultiTargetCamera : MonoBehaviour
     public List<Transform> targets = new List<Transform>();
 
     [Header("Camera Settings")]
-    [SerializeField] private float minZoom = 6f;
-    [SerializeField] private float maxZoom = 3f;
-    [SerializeField] private float zoomLimiter = 15f;
-    [SerializeField] private Vector3 offset = new Vector3(0, 35, -45);
-    [SerializeField] private float minY = 15f;
+    [SerializeField] private float minZoom = 120f; // Increased 5x
+    [SerializeField] private float maxZoom = 90f;  // Increased 5x
+    [SerializeField] private float zoomLimiter = 150f; // Increased for wider view
+    [SerializeField] private Vector3 offset = new Vector3(0, 175, -200); // Much higher and further back
+    [SerializeField] private float minY = 100f; // Higher minimum height
     [SerializeField] private float smoothTime = 0.3f;
-
 
     private Vector3 velocity;
     private Camera cam;
@@ -55,7 +54,7 @@ public class DynamicMultiTargetCamera : MonoBehaviour
             bounds.Encapsulate(target.position);
         }
 
-        return Mathf.Max(bounds.size.x, bounds.size.z) * 1.5f;
+        return Mathf.Max(bounds.size.x, bounds.size.z) * 5f; // Increased multiplier for much wider view
     }
 
     Vector3 GetCenterPoint()

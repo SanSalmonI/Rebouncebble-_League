@@ -55,8 +55,9 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKey(KeyCode.A)) rotationInput = -1;
         else rotationInput = 0;
 
-        isJumping = Input.GetButtonDown("Jump");
-        isSprinting = Input.GetKey(KeyCode.LeftShift);
+        // Player 1 specific jump and sprint
+        isJumping = Input.GetKey(KeyCode.Space);
+        isSprinting = Input.GetKey(KeyCode.RightShift);
     }
 
     protected virtual void HandleRotation()
@@ -87,7 +88,7 @@ public class PlayerController : MonoBehaviour
 
     protected virtual void HandleJumping()
     {
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (isJumping && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }

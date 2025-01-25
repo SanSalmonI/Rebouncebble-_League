@@ -14,7 +14,8 @@ public class PlayerControllerP2 : PlayerController
         else if (Input.GetKey(KeyCode.LeftArrow)) rotationInput = -1;
         else rotationInput = 0;
 
-        isJumping = Input.GetKey(KeyCode.RightControl);
-        isSprinting = Input.GetKey(KeyCode.RightShift);
+        // Player 2 specific jump and sprint
+        isJumping = Input.GetKey(KeyCode.LeftControl);
+        isSprinting = Input.GetKey(KeyCode.LeftShift);
     }
 }
