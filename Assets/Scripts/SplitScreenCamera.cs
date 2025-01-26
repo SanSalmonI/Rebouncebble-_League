@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SplitScreenCamera : MonoBehaviour
 {
@@ -6,13 +7,17 @@ public class SplitScreenCamera : MonoBehaviour
     [SerializeField] private Transform player2;
     [SerializeField] private Vector3 cameraOffset = new Vector3(0, 5, -5);
     [SerializeField] private float smoothSpeed = 0.125f;
+    [SerializeField] private Color borderColor = Color.black;
+    [SerializeField] private float borderThickness = 4f;
 
     private Camera player1Camera;
     private Camera player2Camera;
+    private GameObject uiCanvas;
 
     private void Start()
     {
         SetupCameras();
+        CreateBorders();
     }
 
     private void LateUpdate()
@@ -41,6 +46,46 @@ public class SplitScreenCamera : MonoBehaviour
 
         player1Camera.rect = new Rect(0, 0, 0.5f, 1);
         player2Camera.rect = new Rect(0.5f, 0, 0.5f, 1);
+    }
+
+    private void CreateBorders()
+    {
+        // Create Canvas
+        uiCanvas = new GameObject("BorderCanvas");
+        Canvas canvas = uiCanvas.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        uiCanvas.AddComponent<CanvasScaler>();
+
+        // Create center vertical line
+        GameObject centerLine = new GameObject("CenterLine");
+        centerLine.transform.SetParent(uiCanvas.transform, false);
+        UnityEngine.UI.Image centerImage = centerLine.AddComponent<UnityEngine.UI.Image>();
+        centerImage.color = borderColor;
+        RectTransform centerRect = centerImage.GetComponent<RectTransform>();
+        centerRect.anchorMin = new Vector2(0.5f, 0);
+        centerRect.anchorMax = new Vector2(0.5f, 1);
+        centerRect.sizeDelta = new Vector2(borderThickness, 0);
+        centerRect.anchoredPosition = Vector2.zero;
+
+        // Create horizontal borders
+        CreateBorderLine("TopBorder", new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, borderThickness));
+        CreateBorderLine("BottomBorder", new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, borderThickness));
+
+        // Create vertical borders
+        CreateBorderLine("LeftBorder", new Vector2(0, 0), new Vector2(0, 1), new Vector2(borderThickness, 0));
+        CreateBorderLine("RightBorder", new Vector2(1, 0), new Vector2(1, 1), new Vector2(borderThickness, 0));
+    }
+
+    private void CreateBorderLine(string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 sizeDelta)
+    {
+        GameObject border = new GameObject(name);
+        border.transform.SetParent(uiCanvas.transform, false);
+        UnityEngine.UI.Image borderImage = border.AddComponent<UnityEngine.UI.Image>();
+        borderImage.color = borderColor;
+        RectTransform rectTransform = borderImage.GetComponent<RectTransform>();
+        rectTransform.anchorMin = anchorMin;
+        rectTransform.anchorMax = anchorMax;
+        rectTransform.sizeDelta = sizeDelta;
     }
 
     private void UpdateCameraPositions()

@@ -167,6 +167,8 @@ MonoBehaviour:
   player2: {fileID: 1130804867}
   cameraOffset: {x: 0, y: 5, z: -5}
   smoothSpeed: 0.125
+  borderColor: {r: 0, g: 0, b: 0, a: 1}
+  borderThickness: 4
 --- !u!1 &151825693
 GameObject:
   m_ObjectHideFlags: 0
@@ -1180,7 +1182,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 6
   sprintMultiplier: 2
-  rotationSpeed: 10
+  rotationSpeed: 7
   jumpHeight: 2
   gravity: -9.81
   acceleration: 10
