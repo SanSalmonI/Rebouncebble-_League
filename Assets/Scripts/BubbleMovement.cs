@@ -31,6 +31,11 @@ public class BubbleMovement : MonoBehaviour
     [SerializeField] private Material player1Material; // Red
     [SerializeField] private Material player2Material; // Blue
 
+    [SerializeField] private float currentHotAirForce = 0f; // Tracks the current upward force
+    [SerializeField] private float maxHotAirForce = 30f;   // Maximum upward force
+    [SerializeField] private float gradualRiseSpeed = 3f; // Speed of force increment
+    [SerializeField] private float gradualFallSpeed = 1.5f; // Speed of force decrement
+
     private Vector3 currentBaseScale;
     private float elapsedTime = 0f;
 
@@ -41,6 +46,11 @@ public class BubbleMovement : MonoBehaviour
 
     private Renderer ballRenderer; // For material change
     private int hitCount = 0; // Tracks the number of hits
+
+    private bool hitSpikes = false; // Tracks if the bubble has hit spikes
+    private float spikeTimer = 0f; // Timer for spikes
+    private float spikeCooldawDuration = 2f; // Duration of spikes
+    public bool spawnBubble = false; // Tracks if game manger should spawn a new bubble
 
     void Start()
     {
@@ -77,7 +87,8 @@ public class BubbleMovement : MonoBehaviour
         ApplyFloating();
         DecreaseSize();
         RecoverFromSquish();
-        
+        resetCurrentAirForce();
+        resetSpikesTimer();
     }
 
     void DecreaseSize()
@@ -185,6 +196,28 @@ public class BubbleMovement : MonoBehaviour
         lastBounceTime = Time.time;
     }
 
+    void HandleSpikesBounce(Collision collision)
+    {
+        // Calculate the direction away from the collision point
+        Vector3 collisionNormal = collision.contacts[0].normal; // Normal vector of the collision point
+        Vector3 bounceDirection = (collisionNormal + Vector3.up).normalized; // Add upward bias for a dramatic bounce
+
+        // Define bounce force magnitude
+        float horizontalBounceForce = 50f; // horizontal bounce
+        float verticalBounceForce = 30f;   // vertical bounce
+
+        // Apply the horizontal and vertical bounce forces
+        Vector3 horizontalForce = new Vector3(bounceDirection.x, 0, bounceDirection.z) * horizontalBounceForce;
+        Vector3 verticalForce = Vector3.up * verticalBounceForce;
+
+        rb.AddForce(horizontalForce + verticalForce, ForceMode.Impulse);
+
+        // Shrink the bubble to half its current size
+        Vector3 newScale = transform.localScale * 0.5f;
+        newScale = Vector3.Max(newScale, Vector3.one * 0.1f);
+        transform.localScale = newScale;
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         Debug.Log($"Bubble collided with {collision.gameObject.name}");
@@ -212,6 +245,54 @@ public class BubbleMovement : MonoBehaviour
         }
 
         ApplySquishEffect();
+
+        if (collision.gameObject.CompareTag("Spike"))
+        {
+            Debug.Log("Bubble hit spikes!");
+            hitSpikes = true;
+            HandleSpikesBounce(collision);
+        }
+    }
+
+    //collision with the hot air
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.CompareTag("Fire"))
+        {
+            Debug.Log("Bubble is in fire trigger!");
+
+            // Gradually increase the upward force
+            if (currentHotAirForce < maxHotAirForce)
+            {
+                currentHotAirForce += gradualRiseSpeed * Time.deltaTime;
+            }
+
+            // Apply the current upward force
+            rb.AddForce(Vector3.up * currentHotAirForce, ForceMode.Acceleration);
+        }
+        
+
+    }
+
+    void resetCurrentAirForce()
+    {
+        if (currentHotAirForce > 0)
+        {
+            currentHotAirForce -= gradualFallSpeed * Time.deltaTime;
+        }
+    }
+
+    void resetSpikesTimer()
+    {
+        if (hitSpikes)
+        {
+            spikeTimer += Time.deltaTime;
+            if (spikeTimer >= spikeCooldawDuration)
+            {
+                hitSpikes = false;
+                spikeTimer = 0f;
+            }
+        }
     }
 
     void ApplySquishEffect()
@@ -250,5 +331,4 @@ public class BubbleMovement : MonoBehaviour
             transform.localScale = currentBaseScale;
         }
     }
-
 }
