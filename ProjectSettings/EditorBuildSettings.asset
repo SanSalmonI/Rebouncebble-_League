@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Main Menu.unity
+    guid: 71f8c6d1e427ca347a19dc61180f5116
+  - enabled: 1
+    path: Assets/Scenes/Level01.unity
+    guid: 53da2384520a9314c9efaa0eb78fd2ab
+  - enabled: 1
     path: Assets/Scenes/Rebouncebble_League.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:
