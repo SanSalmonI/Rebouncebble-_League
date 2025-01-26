@@ -75,8 +75,9 @@ public class BubbleMovement : MonoBehaviour
         ApplyGravity();
         ApplyAirResistance();
         ApplyFloating();
-        RecoverFromSquish();
         DecreaseSize();
+        RecoverFromSquish();
+        
     }
 
     void DecreaseSize()
@@ -87,12 +88,12 @@ public class BubbleMovement : MonoBehaviour
             float scaleMultiplier = Mathf.Lerp(1f, minSize / startSizeXYZ, elapsedTime / sizeTimer);
 
             Vector3 newScale = new Vector3(startSizeXYZ, startSizeXYZ, startSizeXYZ) * scaleMultiplier;
-            // Clamping to ensure no dimension goes below minSize
+
+            // Ensure no dimension goes below minSize
             newScale.x = Mathf.Max(newScale.x, minSize);
             newScale.y = Mathf.Max(newScale.y, minSize);
             newScale.z = Mathf.Max(newScale.z, minSize);
 
-            transform.localScale = newScale;
             currentBaseScale = newScale;
         }
     }
@@ -229,18 +230,25 @@ public class BubbleMovement : MonoBehaviour
     {
         if (isSquished)
         {
+            // Smoothly move from current squish scale back to the latest "currentBaseScale"
             transform.localScale = Vector3.Lerp(
                 transform.localScale,
                 currentBaseScale,
                 Time.deltaTime * squishRecoverySpeed
             );
 
-            // Close enough to fully recovered
+            // If nearly at the base scale, snap fully and stop squishing
             if (Vector3.Distance(transform.localScale, currentBaseScale) < 0.01f)
             {
                 transform.localScale = currentBaseScale;
                 isSquished = false;
             }
         }
+        else
+        {
+            // If not squished, make sure we match the updated base scale
+            transform.localScale = currentBaseScale;
+        }
     }
+
 }
