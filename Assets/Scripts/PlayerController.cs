@@ -22,10 +22,12 @@ public class PlayerController : MonoBehaviour
     protected Vector3 currentMoveVelocity;
     protected float currentSpeed;
     protected bool isGrounded;
-    protected Vector3 inputDirection;
-    protected float rotationInput;
-    protected bool isJumping;
-    protected bool isSprinting;
+
+    [Header("Input Variables")]
+    public Vector3 inputDirection;
+    public float rotationInput;
+    public bool isJumping;
+    public bool isSprinting;
 
     protected virtual void Start()
     {
@@ -44,30 +46,15 @@ public class PlayerController : MonoBehaviour
     protected virtual void Update()
     {
         CheckGrounded();
-        GetInput();
         HandleRotation();
         HandleMovement();
         HandleJumping();
         ApplyGravity();
     }
 
-    protected virtual void GetInput()
-    {
-        if (Input.GetKey(KeyCode.W)) inputDirection.z = 1;
-        else if (Input.GetKey(KeyCode.S)) inputDirection.z = -1;
-        else inputDirection.z = 0;
-
-        if (Input.GetKey(KeyCode.D)) rotationInput = 1;
-        else if (Input.GetKey(KeyCode.A)) rotationInput = -1;
-        else rotationInput = 0;
-
-        isJumping = Input.GetKey(KeyCode.Space);
-        isSprinting = Input.GetKey(KeyCode.LeftShift);
-    }
-
     protected virtual void HandleRotation()
     {
-        float rotation = rotationInput * rotationSpeed * Time.deltaTime;
+        float rotation = rotationInput * rotationSpeed * Time.deltaTime * 100f;
         transform.Rotate(Vector3.up * rotation);
     }
 
