@@ -237,6 +237,52 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e8ba0a5e4a98ef54c973f714eda13441, type: 3}
+--- !u!1 &207107918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 207107920}
+  - component: {fileID: 207107919}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &207107919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207107918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f55c7180f928ca644a02367771a88a6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player1Lives: 3
+  player2Lives: 3
+--- !u!4 &207107920
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207107918}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -16.86604, y: 3.822493, z: -38.17883}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &313749744
 GameObject:
   m_ObjectHideFlags: 0
@@ -826,7 +872,7 @@ PrefabInstance:
     - target: {fileID: 1723593300158014024, guid: e90efebf1eb91b640bc23ea1d3c007c1, type: 3}
       propertyPath: defaultMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 58c3b3321491b7c429be2279faed3794, type: 2}
+      objectReference: {fileID: 2100000, guid: b8bfd7ab902aee84dafdc84adc7fba73, type: 2}
     - target: {fileID: 1723593300158014024, guid: e90efebf1eb91b640bc23ea1d3c007c1, type: 3}
       propertyPath: gradualFallSpeed
       value: 1.5
@@ -1407,3 +1453,4 @@ SceneRoots:
   - {fileID: 357820828}
   - {fileID: 130207014}
   - {fileID: 19805797}
+  - {fileID: 207107920}
