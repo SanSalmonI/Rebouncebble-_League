@@ -213,12 +213,12 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 331052262}
-  - {fileID: 274557433}
   - {fileID: 674867411}
-  - {fileID: 642510124}
-  - {fileID: 926321277}
+  - {fileID: 274557433}
+  - {fileID: 331052262}
   - {fileID: 1968808102}
+  - {fileID: 926321277}
+  - {fileID: 642510124}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -238,7 +238,7 @@ GameObject:
   - component: {fileID: 274557435}
   - component: {fileID: 274557434}
   m_Layer: 5
-  m_Name: BlueLives (1)
+  m_Name: BlueLife2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -408,6 +408,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &326221339
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 326221341}
+  - component: {fileID: 326221340}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &326221340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 326221339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f55c7180f928ca644a02367771a88a6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player1Lives: 3
+  player2Lives: 3
+--- !u!4 &326221341
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 326221339}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 710.7205, y: 319.1402, z: 185.53625}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &331052261
 GameObject:
   m_ObjectHideFlags: 0
@@ -420,7 +466,7 @@ GameObject:
   - component: {fileID: 331052264}
   - component: {fileID: 331052263}
   m_Layer: 5
-  m_Name: BlueLives
+  m_Name: BlueLife3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -819,7 +865,7 @@ GameObject:
   - component: {fileID: 642510126}
   - component: {fileID: 642510125}
   m_Layer: 5
-  m_Name: RedLives
+  m_Name: RedLife3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -891,7 +937,7 @@ GameObject:
   - component: {fileID: 674867413}
   - component: {fileID: 674867412}
   m_Layer: 5
-  m_Name: BlueLives (2)
+  m_Name: BlueLife1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1275,7 +1321,7 @@ GameObject:
   - component: {fileID: 926321279}
   - component: {fileID: 926321278}
   m_Layer: 5
-  m_Name: RedLives (1)
+  m_Name: RedLife2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1963,7 +2009,7 @@ GameObject:
   - component: {fileID: 1968808104}
   - component: {fileID: 1968808103}
   m_Layer: 5
-  m_Name: RedLives (2)
+  m_Name: RedLife1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2028,10 +2074,11 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 845722951}
+  - {fileID: 326221341}
+  - {fileID: 139515281}
   - {fileID: 1954961622}
   - {fileID: 599465089}
   - {fileID: 979738117}
-  - {fileID: 139515281}
   - {fileID: 303938402}
   - {fileID: 1419446757}
   - {fileID: 792242328}
