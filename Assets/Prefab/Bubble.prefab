@@ -186,3 +186,6 @@ MonoBehaviour:
   startSizeXYZ: 10
   sizeTimer: 90
   minSize: 3
+  defaultMaterial: {fileID: 2100000, guid: b8bfd7ab902aee84dafdc84adc7fba73, type: 2}
+  player1Material: {fileID: 2100000, guid: 35e5fd6b9a90c884ba39b7da67ffea91, type: 2}
+  player2Material: {fileID: 2100000, guid: 4f5760bf1462d5741b6d05f73618b2a3, type: 2}

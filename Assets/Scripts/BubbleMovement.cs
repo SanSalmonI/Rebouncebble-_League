@@ -26,6 +26,11 @@ public class BubbleMovement : MonoBehaviour
     [SerializeField] private float sizeTimer = 40f;
     [SerializeField] private float minSize = 0.1f;
 
+    [Header("Materials")]
+    [SerializeField] private Material defaultMaterial; // Default
+    [SerializeField] private Material player1Material; // Red
+    [SerializeField] private Material player2Material; // Blue
+
     private Vector3 currentBaseScale;
     private float elapsedTime = 0f;
 
@@ -34,14 +39,22 @@ public class BubbleMovement : MonoBehaviour
     private bool isSquished;
     private float lastBounceTime;
 
+    private Renderer ballRenderer; // For material change
+    private int hitCount = 0; // Tracks the number of hits
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        ballRenderer = GetComponent<Renderer>(); // Get the Renderer to change materials
+
         SetupRigidbody();
 
         originalScale = new Vector3(startSizeXYZ, startSizeXYZ, startSizeXYZ);
         transform.localScale = originalScale;
         currentBaseScale = originalScale;
+
+        // Set initial material (for player 1, Red)
+        ballRenderer.material = defaultMaterial;
     }
 
     void SetupRigidbody()
@@ -178,6 +191,19 @@ public class BubbleMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             HandlePlayerCollision(collision);
+
+            // Player 1 (tag "Player") hits the ball, switch to Red
+            ballRenderer.material = player1Material; // Switch to Blue for Player 2     
+        }
+        else if (collision.gameObject.CompareTag("Player2"))
+        {
+            HandlePlayerCollision(collision);
+
+            // Player 2 (tag "Player2") hits the ball, switch to Blue
+            if (collision.gameObject.CompareTag("Player2"))
+            {
+                    ballRenderer.material = player2Material; // Switch to Blue for Player 2
+            }
         }
         else if (collision.gameObject.CompareTag("Ground"))
         {
