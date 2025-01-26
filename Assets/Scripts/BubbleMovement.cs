@@ -12,7 +12,6 @@ public class BubbleMovement : MonoBehaviour
     [SerializeField] private float upwardBias = 1.5f;
 
     [Header("Movement")]
-    // Negative gravity for downward force, or rename and invert sign:
     [SerializeField] private float gravity = -15f;
     [SerializeField] private float airResistance = 0.997f;
     [SerializeField] private float floatTime = 0.5f;
@@ -38,24 +37,26 @@ public class BubbleMovement : MonoBehaviour
 
     private Vector3 currentBaseScale;
     private float elapsedTime = 0f;
-
     private Rigidbody rb;
     private Vector3 originalScale;
     private bool isSquished;
     private float lastBounceTime;
+    private Renderer ballRenderer;
+    private bool hitSpikes = false;
+    private float spikeTimer = 0f;
+    private float spikeCooldawDuration = 2f;
+    public bool spawnBubble = false;
 
-    private Renderer ballRenderer; // For material change
-    private int hitCount = 0; // Tracks the number of hits
+    public LifeManager lifeManager;
 
-    private bool hitSpikes = false; // Tracks if the bubble has hit spikes
-    private float spikeTimer = 0f; // Timer for spikes
-    private float spikeCooldawDuration = 2f; // Duration of spikes
-    public bool spawnBubble = false; // Tracks if game manger should spawn a new bubble
+ 
+    private enum LastHitter { None, Red, Blue }
+    private LastHitter lastHitter = LastHitter.None;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        ballRenderer = GetComponent<Renderer>(); // Get the Renderer to change materials
+        ballRenderer = GetComponent<Renderer>();
 
         SetupRigidbody();
 
@@ -63,15 +64,12 @@ public class BubbleMovement : MonoBehaviour
         transform.localScale = originalScale;
         currentBaseScale = originalScale;
 
-        // Set initial material (for player 1, Red)
-        ballRenderer.material = defaultMaterial;
+        ballRenderer.material = defaultMaterial; // Start with a default
     }
 
     void SetupRigidbody()
     {
-        // If you want to apply custom gravity, set this to false:
         rb.useGravity = false;
-        // Unity standard drag properties:
         rb.linearDamping = 0.1f;
         rb.angularDamping = 0.8f;
         rb.mass = 0.8f;
@@ -99,8 +97,6 @@ public class BubbleMovement : MonoBehaviour
             float scaleMultiplier = Mathf.Lerp(1f, minSize / startSizeXYZ, elapsedTime / sizeTimer);
 
             Vector3 newScale = new Vector3(startSizeXYZ, startSizeXYZ, startSizeXYZ) * scaleMultiplier;
-
-            // Ensure no dimension goes below minSize
             newScale.x = Mathf.Max(newScale.x, minSize);
             newScale.y = Mathf.Max(newScale.y, minSize);
             newScale.z = Mathf.Max(newScale.z, minSize);
@@ -111,29 +107,24 @@ public class BubbleMovement : MonoBehaviour
 
     void ApplyGravity()
     {
-        // Only apply our custom gravity if we have "floated" long enough and are not on the ground
         if (Time.time - lastBounceTime > floatTime && !IsTouchingGround())
         {
-            // gravity is negative, so Vector3.up * negative => downward force
             rb.AddForce(Vector3.up * gravity, ForceMode.Acceleration);
         }
     }
 
     bool IsTouchingGround()
     {
-        // If you want more robust ground checks, consider SphereCast
         return Physics.Raycast(transform.position, Vector3.down, 1.1f, LayerMask.GetMask("Ground"));
     }
 
     void ApplyAirResistance()
     {
-        // Must be rb.velocity in standard Unity
         rb.linearVelocity *= airResistance;
     }
 
     void ApplyFloating()
     {
-        // A small upward push if the velocity is downward
         if (rb.linearVelocity.y < 0)
         {
             rb.AddForce(Vector3.up * 2f, ForceMode.Acceleration);
@@ -142,41 +133,29 @@ public class BubbleMovement : MonoBehaviour
 
     void HandlePlayerCollision(Collision collision)
     {
-        // If you are using the default CharacterController, it has no velocity property
-        // This will fail unless you have a custom CharacterController or a different approach
-        // For demonstration, let's just use the collision's relative velocity:
         Vector3 playerVelocity = collision.relativeVelocity;
-
         float impactSpeed = collision.relativeVelocity.magnitude;
         Vector3 hitDirection = (transform.position - collision.contacts[0].point).normalized;
 
-        // Start from base
         float bounceForce = playerImpactForce;
 
-        // Check if the "player" is moving upward relative to the bubble
         if (playerVelocity.y > 0)
         {
             bounceForce *= playerJumpMultiplier;
-
-            // Also check angle
             float verticalAngle = Vector3.Angle(Vector3.up, hitDirection);
             if (verticalAngle < 45f)
             {
-                // Hitting from below
                 bounceForce *= 1.5f;
             }
         }
 
         Vector3 bounceDirection = (hitDirection + Vector3.up * upwardBias).normalized;
-
         float impactVelocity = Mathf.Abs(rb.linearVelocity.y);
         Vector3 currentHorizontalVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
 
-        // Use updated bounceForce
         Vector3 bounceVelocity = currentHorizontalVelocity * bounceDamping
-                               + bounceDirection * Mathf.Sqrt(2f * bounceForce * (impactVelocity + 5f));
+                                 + bounceDirection * Mathf.Sqrt(2f * bounceForce * (impactVelocity + 5f));
 
-        // Ensure Y is not below a minimum
         float minY = Mathf.Sqrt(2f * bounceForce * (impactSpeed + 5f));
         bounceVelocity.y = Mathf.Max(bounceVelocity.y, minY);
 
@@ -198,21 +177,17 @@ public class BubbleMovement : MonoBehaviour
 
     void HandleSpikesBounce(Collision collision)
     {
-        // Calculate the direction away from the collision point
-        Vector3 collisionNormal = collision.contacts[0].normal; // Normal vector of the collision point
-        Vector3 bounceDirection = (collisionNormal + Vector3.up).normalized; // Add upward bias for a dramatic bounce
+        Vector3 collisionNormal = collision.contacts[0].normal;
+        Vector3 bounceDirection = (collisionNormal + Vector3.up).normalized;
 
-        // Define bounce force magnitude
-        float horizontalBounceForce = 50f; // horizontal bounce
-        float verticalBounceForce = 30f;   // vertical bounce
+        float horizontalBounceForce = 50f;
+        float verticalBounceForce = 30f;
 
-        // Apply the horizontal and vertical bounce forces
         Vector3 horizontalForce = new Vector3(bounceDirection.x, 0, bounceDirection.z) * horizontalBounceForce;
         Vector3 verticalForce = Vector3.up * verticalBounceForce;
 
         rb.AddForce(horizontalForce + verticalForce, ForceMode.Impulse);
 
-        // Shrink the bubble to half its current size
         Vector3 newScale = transform.localScale * 0.5f;
         newScale = Vector3.Max(newScale, Vector3.one * 0.1f);
         transform.localScale = newScale;
@@ -225,23 +200,34 @@ public class BubbleMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             HandlePlayerCollision(collision);
-
-            // Player 1 (tag "Player") hits the ball, switch to Red
-            ballRenderer.material = player1Material; // Switch to Blue for Player 2     
+            // The bubble is now Red
+            lastHitter = LastHitter.Red;
+            ballRenderer.material = player1Material;
         }
         else if (collision.gameObject.CompareTag("Player2"))
         {
             HandlePlayerCollision(collision);
-
-            // Player 2 (tag "Player2") hits the ball, switch to Blue
-            if (collision.gameObject.CompareTag("Player2"))
-            {
-                    ballRenderer.material = player2Material; // Switch to Blue for Player 2
-            }
+            // The bubble is now Blue
+            lastHitter = LastHitter.Blue;
+            ballRenderer.material = player2Material;
         }
         else if (collision.gameObject.CompareTag("Ground"))
         {
             HandleGroundBounce(collision);
+
+          
+            // SUBTRACT A LIFE FROM THE PLAYER WHO LAST HIT THE BUBBLE
+            if (lastHitter == LastHitter.Red)
+            {
+                lifeManager.LoseRedLife();
+            }
+            else if (lastHitter == LastHitter.Blue)
+            {
+                lifeManager.LoseBlueLife();
+            }
+            // Reset ownership 
+            lastHitter = LastHitter.None;
+            
         }
 
         ApplySquishEffect();
@@ -254,24 +240,17 @@ public class BubbleMovement : MonoBehaviour
         }
     }
 
-    //collision with the hot air
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.CompareTag("Fire"))
         {
             Debug.Log("Bubble is in fire trigger!");
-
-            // Gradually increase the upward force
             if (currentHotAirForce < maxHotAirForce)
             {
                 currentHotAirForce += gradualRiseSpeed * Time.deltaTime;
             }
-
-            // Apply the current upward force
             rb.AddForce(Vector3.up * currentHotAirForce, ForceMode.Acceleration);
         }
-        
-
     }
 
     void resetCurrentAirForce()
@@ -297,7 +276,6 @@ public class BubbleMovement : MonoBehaviour
 
     void ApplySquishEffect()
     {
-        // Squish relative to the *current* base scale
         Vector3 squishScale = currentBaseScale;
         squishScale.y *= (1f - squishAmount);
         squishScale.x *= (1f + squishAmount * 0.5f);
@@ -311,14 +289,12 @@ public class BubbleMovement : MonoBehaviour
     {
         if (isSquished)
         {
-            // Smoothly move from current squish scale back to the latest "currentBaseScale"
             transform.localScale = Vector3.Lerp(
                 transform.localScale,
                 currentBaseScale,
                 Time.deltaTime * squishRecoverySpeed
             );
 
-            // If nearly at the base scale, snap fully and stop squishing
             if (Vector3.Distance(transform.localScale, currentBaseScale) < 0.01f)
             {
                 transform.localScale = currentBaseScale;
@@ -327,7 +303,6 @@ public class BubbleMovement : MonoBehaviour
         }
         else
         {
-            // If not squished, make sure we match the updated base scale
             transform.localScale = currentBaseScale;
         }
     }
