@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7374947876807973368}
   - component: {fileID: 4373221905109134249}
   - component: {fileID: 3398932043652355179}
-  - component: {fileID: 5759097905359697599}
+  - component: {fileID: 1723593300158014024}
   m_Layer: 0
   m_Name: Bubble
   m_TagString: Bubble
@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5.3946276, y: 13.91, z: -32.327667}
-  m_LocalScale: {x: 9.676004, y: 9.676004, z: 9.676004}
+  m_LocalScale: {x: 10.018536, y: 10.018536, z: 10.018536}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -136,7 +136,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 122
   m_CollisionDetection: 0
 --- !u!135 &3398932043652355179
 SphereCollider:
@@ -159,7 +159,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5759097905359697599
+--- !u!114 &1723593300158014024
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -168,18 +168,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 514220903716457504}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 923128531ad177b48894176590751417, type: 3}
+  m_Script: {fileID: 11500000, guid: 5df05befe45f737418b2201e48ca02cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundBounceForce: 45
-  playerImpactForce: 25
+  groundBounceForce: 100
+  playerImpactForce: 40
   playerJumpMultiplier: 4
   maxBounceVelocity: 40
   horizontalBounceFactor: 0.8
   bounceDamping: 0.98
   upwardBias: 1.5
   gravity: -15
-  airResistance: 0.997
+  airResistance: 0.98
   floatTime: 0.5
   squishAmount: 0.3
   squishRecoverySpeed: 8
+  startSizeXYZ: 10
+  sizeTimer: 90
+  minSize: 3
