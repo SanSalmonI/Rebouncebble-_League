@@ -99,10 +99,9 @@ GameObject:
   - component: {fileID: 5914639491962361661}
   - component: {fileID: 4851274731636978283}
   - component: {fileID: 3875903764039958603}
-  - component: {fileID: 4989765632632821761}
   - component: {fileID: 1690110147898544452}
   - component: {fileID: 2913295378034677674}
-  - component: {fileID: -836077441307268847}
+  - component: {fileID: -158145930978205162}
   m_Layer: 6
   m_Name: FirstPlayer
   m_TagString: Player
@@ -230,30 +229,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &4989765632632821761
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4346241708081423925}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da923232ce5bb8a4e8ae673f4f2c87e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 6
-  sprintMultiplier: 2
-  rotationSpeed: 400
-  jumpHeight: 2
-  gravity: -9.81
-  acceleration: 10
-  deceleration: 8
-  groundCheck: {fileID: 5389024833273999509}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  groundCheckRadius: 0.2
 --- !u!143 &1690110147898544452
 CharacterController:
   m_ObjectHideFlags: 0
@@ -300,7 +275,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.49, y: 0.17, z: 0.49}
   m_Center: {x: 0, y: -1.04, z: 0}
---- !u!114 &-836077441307268847
+--- !u!114 &-158145930978205162
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -309,41 +284,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 4346241708081423925}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 621567455fd1c4ceb811cc8a00b6a1a5, type: 3}
+  m_Script: {fileID: 11500000, guid: da923232ce5bb8a4e8ae673f4f2c87e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_NotificationBehavior: 0
-  m_MaxPlayerCount: -1
-  m_AllowJoining: 1
-  m_JoinBehavior: 0
-  m_PlayerJoinedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_PlayerLeftEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_JoinAction:
-    m_UseReference: 0
-    m_Action:
-      m_Name: 
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 88ff9a23-a448-4a11-8f8c-b684ea2b2180
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  m_PlayerPrefab: {fileID: 4346241708081423925}
-  m_SplitScreen: 0
-  m_MaintainAspectRatioInSplitScreen: 0
-  m_FixedNumberOfSplitScreens: -1
-  m_SplitScreenRect:
+  moveSpeed: 6
+  sprintSpeed: 10
+  rotationSpeed: 180
+  jumpForce: 12
+  gravity: -30
+  groundMask:
     serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
+    m_Bits: 8
+  groundCheckDistance: 0.4
+  orientation: {fileID: 0}
+  inputDirection: {x: 0, y: 0, z: 0}
+  rotationInput: 0
+  isJumping: 0
+  isSprinting: 0
 --- !u!1 &4371748592278347151
 GameObject:
   m_ObjectHideFlags: 0

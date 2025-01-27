@@ -2,110 +2,88 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    [SerializeField] protected float moveSpeed = 6f;
-    [SerializeField] protected float sprintMultiplier = 2f;
-    [SerializeField] protected float rotationSpeed = 10f;
-    [SerializeField] protected float jumpHeight = 2f;
-    [SerializeField] protected float gravity = -9.81f;
-    [SerializeField] protected float acceleration = 10f;
-    [SerializeField] protected float deceleration = 8f;
+    [Header("Movement")]
+    [SerializeField] private float moveSpeed = 6f;
+    [SerializeField] private float sprintSpeed = 10f;
+    [SerializeField] private float rotationSpeed = 180f;
 
-    [Header("Ground Detection")]
-    [SerializeField] protected Transform groundCheck;
-    [SerializeField] protected LayerMask groundLayer;
-    [SerializeField] protected float groundCheckRadius = 0.2f;
+    [Header("Jumping")]
+    [SerializeField] private float jumpForce = 12f;
+    [SerializeField] private float gravity = -30f;
 
-    protected CharacterController controller;
-    protected Transform mainCamera;
-    protected Vector3 velocity;
-    protected Vector3 currentMoveVelocity;
-    protected float currentSpeed;
-    protected bool isGrounded;
+    [Header("Ground Check")]
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private float groundCheckRadius = 0.4f;
+    [SerializeField] private LayerMask groundMask;
 
-    [Header("Input Variables")]
-    public Vector3 inputDirection;
-    public float rotationInput;
-    public bool isJumping;
-    public bool isSprinting;
+    [Header("References")]
+    [SerializeField] private Transform orientation;
 
-    protected virtual void Start()
+    private CharacterController controller;
+    private Vector3 velocity;
+    private bool isGrounded;
+
+    // Input fields
+    [HideInInspector] public Vector3 inputDirection;
+    [HideInInspector] public float rotationInput;
+    [HideInInspector] public bool isJumping;
+    [HideInInspector] public bool isSprinting;
+
+    private void Start()
     {
         controller = GetComponent<CharacterController>();
-        mainCamera = Camera.main?.transform;
-
-        if (groundCheck == null)
-        {
-            GameObject check = new GameObject("GroundCheck");
-            check.transform.parent = transform;
-            check.transform.localPosition = Vector3.down * 0.5f;
-            groundCheck = check.transform;
-        }
     }
 
-    protected virtual void Update()
+    private void Update()
     {
-        CheckGrounded();
-        HandleRotation();
+        CheckGround();
         HandleMovement();
-        HandleJumping();
-        ApplyGravity();
+        HandleRotation();
+        HandleJump();
     }
 
-    protected virtual void HandleRotation()
+    private void CheckGround()
     {
-        float rotation = rotationInput * rotationSpeed * Time.deltaTime * 100f;
-        transform.Rotate(Vector3.up * rotation);
-    }
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundMask);
 
-    protected virtual void HandleMovement()
-    {
-        float targetSpeed = moveSpeed * (isSprinting ? sprintMultiplier : 1f);
-        Vector3 moveDirection = transform.forward * inputDirection.z;
-        moveDirection.Normalize();
-
-        if (moveDirection.magnitude > 0)
-        {
-            currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, acceleration * Time.deltaTime);
-        }
-        else
-        {
-            currentSpeed = Mathf.Lerp(currentSpeed, 0, deceleration * Time.deltaTime);
-        }
-
-        Vector3 targetVelocity = moveDirection * currentSpeed;
-        currentMoveVelocity = Vector3.Lerp(currentMoveVelocity, targetVelocity, acceleration * Time.deltaTime);
-        controller.Move(currentMoveVelocity * Time.deltaTime);
-    }
-
-    protected virtual void HandleJumping()
-    {
-        if (isJumping && isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-        }
-    }
-
-    protected virtual void ApplyGravity()
-    {
-        velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
-    }
-
-    protected virtual void CheckGrounded()
-    {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
         }
     }
 
-    protected virtual void OnDrawGizmos()
+    private void HandleMovement()
     {
+        float currentSpeed = isSprinting ? sprintSpeed : moveSpeed;
+        Vector3 moveDirection = orientation.forward * inputDirection.z;
+        controller.Move(moveDirection * currentSpeed * Time.deltaTime);
+
+        // Apply gravity
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
+    }
+
+    private void HandleRotation()
+    {
+        float rotation = rotationInput * rotationSpeed * Time.deltaTime;
+        transform.Rotate(Vector3.up, rotation);
+        orientation.rotation = transform.rotation;
+    }
+
+    private void HandleJump()
+    {
+        if (isJumping && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Visualize ground check sphere in editor
         if (groundCheck != null)
         {
-            Gizmos.color = isGrounded ? Color.green : Color.red;
+            Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
         }
     }
