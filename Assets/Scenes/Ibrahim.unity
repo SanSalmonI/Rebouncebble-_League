@@ -1665,7 +1665,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 32423766071612116, guid: 101e9f6d3de734c4e94e391ede65abf9, type: 3}
       propertyPath: m_Name
-      value: Canvas
+      value: InGameCanvas
       objectReference: {fileID: 0}
     - target: {fileID: 8346707033331105604, guid: 101e9f6d3de734c4e94e391ede65abf9, type: 3}
       propertyPath: m_Pivot.x
