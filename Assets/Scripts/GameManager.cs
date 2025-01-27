@@ -43,7 +43,7 @@ public class LifeManager : MonoBehaviour
 
     public void LoseBlueLife()
     {
-        if (currentBlueIndex < blueLives.Length)
+        if (currentBlueIndex < blueLives.Length-1)
         {
             blueLives[currentBlueIndex].SetActive(false);
             currentBlueIndex++;
