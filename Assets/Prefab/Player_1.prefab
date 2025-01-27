@@ -274,17 +274,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 6
-  sprintMultiplier: 2
+  sprintSpeed: 10
   rotationSpeed: 400
-  jumpHeight: 2
+  jumpForce: 12
   gravity: -9.81
-  acceleration: 10
-  deceleration: 8
   groundCheck: {fileID: 1905513724288427057}
-  groundLayer:
+  groundCheckRadius: 0.2
+  groundMask:
     serializedVersion: 2
     m_Bits: 8
-  groundCheckRadius: 0.2
+  orientation: {fileID: 0}
+  inputDirection: {x: 0, y: 0, z: 0}
+  rotationInput: 0
+  isJumping: 0
+  isSprinting: 0
 --- !u!143 &8126635826000110034
 CharacterController:
   m_ObjectHideFlags: 0
