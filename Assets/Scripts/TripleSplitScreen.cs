@@ -15,6 +15,9 @@ public class TripleSplitScreen : MonoBehaviour
     public float rotationSpeed = 180f;
     public float followSpeed = 5f;
 
+    // Additional offset just for the bubble camera
+    public Vector3 bubbleCameraOffset = new Vector3(0, 20, 0);
+
     void Start()
     {
         // Set up camera viewports
@@ -30,6 +33,8 @@ public class TripleSplitScreen : MonoBehaviour
 
     void ConfigureCamera(Camera cam)
     {
+        // For players, a 30-degree tilt might be fine
+        // We'll override the bubble camera’s tilt in LateUpdate or below
         cam.clearFlags = CameraClearFlags.Depth;
         cam.transform.rotation = Quaternion.Euler(30, 0, 0);
     }
@@ -37,19 +42,34 @@ public class TripleSplitScreen : MonoBehaviour
     void LateUpdate()
     {
         UpdateThirdPersonCamera(player1Camera, player1);
-        UpdateThirdPersonCamera(bubbleCamera, bubble);
+        UpdateThirdPersonCamera(bubbleCamera, bubble, isBubble: true);
         UpdateThirdPersonCamera(player2Camera, player2);
     }
 
-    void UpdateThirdPersonCamera(Camera cam, Transform target)
+    // Overload to handle the bubble differently
+    void UpdateThirdPersonCamera(Camera cam, Transform target, bool isBubble = false)
     {
+        // Decide which offset to use
+        Vector3 offsetToUse = isBubble ? bubbleCameraOffset : cameraOffset;
+
         // Calculate desired position
-        Vector3 desiredPosition = target.position + target.TransformDirection(cameraOffset);
+        Vector3 desiredPosition = target.position + target.TransformDirection(offsetToUse);
 
         // Smooth follow
         cam.transform.position = Vector3.Lerp(cam.transform.position, desiredPosition, Time.deltaTime * followSpeed);
 
-        // Look at target
-        cam.transform.LookAt(target.position + Vector3.up);
+        // If it's the bubble camera, aim it straight down, or at least more top-down
+        if (isBubble)
+        {
+            // Look straight down at the bubble, or bubble + some height
+            cam.transform.rotation = Quaternion.Euler(90f, 0, 0);
+            // optional: tweak to center bubble in view
+            cam.transform.LookAt(target.position);
+        }
+        else
+        {
+            // Normal third-person look
+            cam.transform.LookAt(target.position + Vector3.up);
+        }
     }
 }
