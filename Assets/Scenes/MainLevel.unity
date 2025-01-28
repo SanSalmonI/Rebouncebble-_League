@@ -227,6 +227,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: -210
       objectReference: {fileID: 0}
+    - target: {fileID: 5282707783357219247, guid: 101e9f6d3de734c4e94e391ede65abf9, type: 3}
+      propertyPath: m_text
+      value: Press "R" to restart
+      objectReference: {fileID: 0}
     - target: {fileID: 5450833333952678747, guid: 101e9f6d3de734c4e94e391ede65abf9, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -712,6 +716,7 @@ GameObject:
   m_Component:
   - component: {fileID: 283521771}
   - component: {fileID: 283521770}
+  - component: {fileID: 283521772}
   m_Layer: 0
   m_Name: GroundCollider
   m_TagString: Ground
@@ -755,6 +760,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &283521772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 283521769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1652e0db26ee624f908c089f494cc45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &373273115 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 273068907749877795, guid: e8ba0a5e4a98ef54c973f714eda13441, type: 3}
