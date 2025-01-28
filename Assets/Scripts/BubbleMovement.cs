@@ -4,12 +4,14 @@ public class BubbleMovement : MonoBehaviour
 {
     [Header("Bounce Physics")]
     [SerializeField] private float groundBounceForce = 45f;
+    [SerializeField] private float defaultBounceForce = 20f;
     [SerializeField] private float playerImpactForce = 25f;
     [SerializeField] private float playerJumpMultiplier = 4f;
     [SerializeField] private float maxBounceVelocity = 40f;
     [SerializeField] private float horizontalBounceFactor = 0.8f;
     [SerializeField] private float bounceDamping = 0.98f;
     [SerializeField] private float upwardBias = 1.5f;
+    [SerializeField] private Vector3 spawnPos;
 
     [Header("Movement")]
     [SerializeField] private float gravity = -15f;
@@ -193,6 +195,23 @@ public class BubbleMovement : MonoBehaviour
         transform.localScale = newScale;
     }
 
+    void HandleUntaggedBounce(Collision collision)
+    {
+        // Calculate the bounce direction
+        Vector3 collisionNormal = collision.contacts[0].normal;
+        Vector3 bounceDirection = (collisionNormal + Vector3.up * upwardBias).normalized;
+
+        // Calculate the bounce force
+        float impactForce = defaultBounceForce;
+        Vector3 horizontalForce = new Vector3(bounceDirection.x, 0, bounceDirection.z) * horizontalBounceFactor * impactForce;
+        Vector3 verticalForce = Vector3.up * impactForce;
+
+        // Apply the bounce force
+        rb.AddForce(horizontalForce + verticalForce, ForceMode.Impulse);
+
+        lastBounceTime = Time.time;
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         Debug.Log($"Bubble collided with {collision.gameObject.name}");
@@ -213,31 +232,60 @@ public class BubbleMovement : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Ground"))
         {
-            HandleGroundBounce(collision);
-
-          
-            // SUBTRACT A LIFE FROM THE PLAYER WHO LAST HIT THE BUBBLE
-            if (lastHitter == LastHitter.Red)
-            {
-                lifeManager.LoseRedLife();
-            }
-            else if (lastHitter == LastHitter.Blue)
-            {
-                lifeManager.LoseBlueLife();
-            }
-            // Reset ownership 
-            lastHitter = LastHitter.None;
             
+            if(lastHitter == LastHitter.Red || lastHitter == LastHitter.Blue)
+            {
+                // SUBTRACT A LIFE FROM THE PLAYER WHO LAST HIT THE BUBBLE
+                if (lastHitter == LastHitter.Red)
+                {
+                    lifeManager.LoseRedLife();
+                }
+                else if (lastHitter == LastHitter.Blue)
+                {
+                    lifeManager.LoseBlueLife();
+                }
+                // Reset ownership 
+                lastHitter = LastHitter.None;
+
+                ResetBubble();
+            }
+            else
+            {
+                HandleGroundBounce(collision);
+            }
+
         }
-
-        ApplySquishEffect();
-
-        if (collision.gameObject.CompareTag("Spike"))
+        else if (collision.gameObject.CompareTag("Spike"))
         {
             Debug.Log("Bubble hit spikes!");
             hitSpikes = true;
             HandleSpikesBounce(collision);
         }
+        else
+        {
+            HandleUntaggedBounce(collision);
+        }
+
+        ApplySquishEffect();
+
+    }
+
+    void ResetBubble()
+    {
+        // Reset the material to default
+        ballRenderer.material = defaultMaterial;
+
+        // Reset the bubble to the spawn position
+        transform.position = spawnPos;
+
+        // Reset the size of the bubble
+        elapsedTime = 0f;
+
+        // Stop and wake the Rigidbody to reset physics
+        rb.Sleep();
+        rb.WakeUp();
+
+        Debug.Log("Bubble has been reset.");
     }
 
     private void OnTriggerStay(Collider other)
