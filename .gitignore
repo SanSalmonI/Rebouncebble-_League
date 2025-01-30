@@ -6,6 +6,8 @@
 /[Ll]ogs/
 /[Tt]emp/
 /[Uu]ser[Ss]ettings/
+/[Bb]uilds/
+/[Oo]bj/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
@@ -50,6 +52,7 @@ sysinfo.txt
 # Builds
 *.apk
 *.aab
+*.exe
 *.unitypackage
 *.app
 
