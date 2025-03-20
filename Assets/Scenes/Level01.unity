@@ -572,6 +572,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 654974256}
+  - component: {fileID: 654974257}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -594,6 +595,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &654974257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 654974255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7e8b6564e96e2e4eb5a892070e8fa02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player1: {fileID: 0}
+  player2: {fileID: 0}
+  startingLives: 3
+  successfulBumpPoints: 10
+  wrongTurnPenalty: -5
+  uiManager: {fileID: 0}
+  gameOverScreen: {fileID: 0}
+  bubble: {fileID: 0}
 --- !u!1 &691963907
 GameObject:
   m_ObjectHideFlags: 0
@@ -1836,6 +1857,8 @@ GameObject:
   - component: {fileID: 1969228562}
   - component: {fileID: 1969228560}
   - component: {fileID: 1969228559}
+  - component: {fileID: 1969228567}
+  - component: {fileID: 1969228566}
   m_Layer: 0
   m_Name: Bubble
   m_TagString: Bubble
@@ -1980,6 +2003,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1969228566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969228557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 965b9b738b339754cb2aa39619377a5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
+--- !u!114 &1969228567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969228557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59e062880c18c5a48b10e82dac1ff8f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundBounceForce: 45
+  playerImpactForce: 25
+  playerJumpMultiplier: 4
+  maxBounceVelocity: 40
+  horizontalBounceFactor: 0.8
+  bounceDamping: 0.98
+  upwardBias: 1.5
+  gravity: -15
+  airResistance: 0.997
+  floatTime: 0.5
+  squishAmount: 0.3
+  squishRecoverySpeed: 8
 --- !u!1 &2038953112
 GameObject:
   m_ObjectHideFlags: 0
